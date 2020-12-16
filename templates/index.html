@@ -1,0 +1,51 @@
+<h1>hello world</h1>
+{% comment %}<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <button id="submit" type="submit">test</button>
+</form>{% endcomment %}
+{{ queue_dict }}
+
+<button id="submit" type="button" onclick="execute()">test</button>
+
+<textarea id="log" cols="100" rows="20"></textarea>
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<script>
+    $.ajaxSetup({
+        data: {csrfmiddlewaretoken: '{{ csrf_token }}'},
+    });
+
+    function trigger() {
+        let interval = setInterval(function get_message() {
+            let message = $.ajax({
+                url: '{% url 'get_message' %}',
+                type: 'get',
+                dataType: 'text',
+                success: function (data) {
+                    if (data === 'done') {
+                        //message.abort();
+                        clearInterval(interval)
+                    } else {
+                        document.querySelector('#log').value += (data + '\n');
+                        //get_message();
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            })
+        }, 1000)
+    }
+
+    function execute() {
+        $('#log').val("");
+        trigger();
+        $.ajax({
+            url: '{% url 'execute' %}',
+            type: 'post',
+            success: function(data){
+                console.log(data);
+            }
+        })
+    }
+</script>
