@@ -1,0 +1,83 @@
+{% load static %}
+<head>
+<link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/4.5.3/css/bootstrap.min.css" rel="stylesheet">
+<link href="{% static 'style.css' %}" rel="stylesheet">
+</head>
+<body>
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/4.5.3/js/bootstrap.min.js"></script>
+<form id="upload-form" enctype="multipart/form-data" method="post">
+        {% csrf_token %}
+        {{ files_form.files }}
+</form>
+<button type="button" class="btn btn-primary js-upload-files">
+      <span></span> Upload photos
+</button>
+<div id="progress-box" class="not-visible">progress</div>
+
+<script>
+    $(".js-upload-files").click(function () {
+        $("#id_files").click();
+    });
+
+console.log('hello world')
+const uploadForm = document.getElementById('upload-form')
+const input = document.getElementById('id_files')
+console.log(input)
+
+const progressBox = document.getElementById('progress-box')
+
+const csrf = document.getElementsByName('csrfmiddlewaretoken')
+
+input.addEventListener('change', ()=>{
+    progressBox.classList.remove('not-visible')
+
+    const img_data = input.files[0]
+    const url = URL.createObjectURL(img_data)
+    console.log(img_data)
+
+    const fd = new FormData(uploadForm)
+
+    $.ajax({
+        type:'POST',
+        url: '{% url 'progress_bar:home' %}',
+        data: fd,
+        beforeSend: function(){
+            console.log('before')
+        },
+        xhr: function(){
+            const xhr = new window.XMLHttpRequest();
+            xhr.upload.addEventListener('progress', e=>{
+                // console.log(e)
+                if (e.lengthComputable) {
+                    const percent = e.loaded / e.total * 100
+                    console.log(percent)
+                    progressBox.innerHTML = `<div class="progress">
+                                                <div class="progress-bar" role="progressbar" style="width: ${percent}%" aria-valuenow="${percent}" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                            <p>${percent.toFixed(1)}%</p>`
+                }
+
+            })
+        },
+        success: function(response){
+            console.log(response)
+            imageBox.innerHTML = `<img src="${url}" width="300px">`
+            alertBox.innerHTML = `<div class="alert alert-success" role="alert">
+                                    Successfully uploaded the image below
+                                </div>`
+            cancelBox.classList.add('not-visible')
+        },
+        error: function(error){
+            console.log(error)
+            alertBox.innerHTML = `<div class="alert alert-danger" role="alert">
+                                    Ups... something went wrong
+                                </div>`
+        },
+        cache: false,
+        contentType: false,
+        processData: false,
+    })
+})
+</script>
+</body>

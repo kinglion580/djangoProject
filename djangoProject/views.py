@@ -5,25 +5,18 @@ import subprocess
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 
-QUEUE_DICT = {}
+q = queue.Queue()
 
 
 def index(request):
-    QUEUE_DICT.clear()
-    user_uuid = str(uuid.uuid4())
-    q = QUEUE_DICT[user_uuid] = queue.Queue()
-    request.session['current_user_uuid'] = user_uuid
     #
     #q.put('hello world')
     #q.put('second string')
 
-    return render(request, 'index.html', {'queue_dict': QUEUE_DICT})
+    return render(request, 'index.html', {'queue_dict': 'xxx'})
 
 
 def execute(request):
-    user_uuid = request.session['current_user_uuid']
-    q = QUEUE_DICT[user_uuid]
-
     if request.POST:
         q.put('checking....')
         run_cmd('python djangoProject/echo.py', q)
@@ -35,12 +28,10 @@ def execute(request):
         q.put('output3...')
         q.put('done')
 
-    return JsonResponse({'queue_dict': str(QUEUE_DICT)})
+    return JsonResponse({'queue_dict': 'xxx'})
 
 
 def get_message(request):
-    user_uuid = request.session['current_user_uuid']
-    q = QUEUE_DICT[user_uuid]
     message = q.get()
     return HttpResponse(message)
 

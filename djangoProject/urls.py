@@ -14,7 +14,9 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
 from . import views
 
 urlpatterns = [
@@ -22,4 +24,6 @@ urlpatterns = [
     path('Yeling/djangoProject/execute/', views.execute, name='execute'),
     path('Yeling/djangoProject/get_message/', views.get_message, name='get_message'),
     path('admin/', admin.site.urls),
+    path('progressbar/', include('progress_bar.urls')),
+    path('Yeling/djangoProject/realtime/', include('realtime.urls')),
 ]

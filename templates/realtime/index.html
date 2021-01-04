@@ -1,12 +1,4 @@
-<h1>hello world</h1>
-{% comment %}<form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    <button id="submit" type="submit">test</button>
-</form>{% endcomment %}
-{{ queue_dict }}
-
 <button id="submit" type="button" onclick="execute()">test</button>
-
 <textarea id="log" cols="100" rows="20"></textarea>
 <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
@@ -17,13 +9,13 @@
         + '/ws/log/'
     );
 
-    logSocket.onmessage = function (e) {
-        const data = JSON.parse(e.data);
-        document.querySelector('#log').value += (data.message + '\n');
+    logSocket.onmessage = function(e) {
+        //const data = JSON.parse(e.data);
+        document.querySelector('#log').value += (e.data + '\n');
     };
 
-    logSocket.onclose = function (e) {
-        console.error('Chat socket closed unexpectedly');
+    logSocket.onclose = function(e) {
+        console.error('log socket closed unexpectedly')
     };
 
     $.ajaxSetup({
@@ -31,9 +23,8 @@
     });
 
     function execute() {
-        $('#log').val("");
         $.ajax({
-            url: '{% url 'execute' %}',
+            url: '{% url 'realtime:execute' %}',
             type: 'post',
             success: function (data) {
                 console.log(data);
