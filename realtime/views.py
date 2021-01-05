@@ -11,14 +11,10 @@ channel_layer = channels.layers.get_channel_layer()
 
 def index(request):
     user_uuid = str(uuid.uuid4())
-    request.session['current_user'] = user_uuid
-    print(user_uuid)
-    return render(request, 'realtime/index.html')
+    return render(request, 'realtime/index.html', {'user_uuid': user_uuid})
 
 
 def execute(request):
     if request.POST:
-        user_uuid = request.session['current_user']
-        print(user_uuid)
-        async_to_sync(channel_layer.group_send)(user_uuid, {'type': 'chat.message', 'text': 'hello world'})
+        async_to_sync(channel_layer.group_send)('test_group', {'type': 'chat.message', 'text': 'hello world'})
     return HttpResponse('done')

@@ -19,7 +19,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'djangoProject.settings')
 application = ProtocolTypeRouter({
     "http": get_asgi_application(),
     # Just HTTP for now. (We can add other protocols later.)
-    "websocket": SessionMiddlewareStack(
+    "websocket": AuthMiddlewareStack(
         URLRouter(
             realtime.routing.websocket_urlpatterns
         )

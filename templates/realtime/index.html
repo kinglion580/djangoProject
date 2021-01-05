@@ -7,6 +7,8 @@
         'ws://'
         + window.location.host
         + '/ws/log/'
+        + '{{ user_uuid }}'
+        + '/'
     );
 
     logSocket.onmessage = function(e) {
