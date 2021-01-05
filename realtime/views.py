@@ -17,6 +17,7 @@ def index(request):
 
 def execute(request):
     if request.POST:
+        output('checking...')
         run_cmd('python djangoProject/echo.py')
     return HttpResponse('done')
 
@@ -28,8 +29,12 @@ def run_cmd(shell_cmd):
         line = p.stdout.readline().strip()
         if line:
             print(line.decode('utf-8'))
-            async_to_sync(channel_layer.group_send)('test_group', {'type': 'chat.message', 'text': line.decode('utf-8')})
+            output(line.decode('utf-8'))
     if p.returncode == 0:
         print('subprogram success')
     else:
         print('subprogram failed')
+
+
+def output(text):
+    async_to_sync(channel_layer.group_send)('test_group', {'type': 'chat.message', 'text': text})
