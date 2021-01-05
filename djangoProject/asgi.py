@@ -21,7 +21,7 @@ import realtime.routing
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'djangoProject.settings')
 
 application = ProtocolTypeRouter({
-    "http": get_asgi_application(),
+    "http": django_asgi_app,
     # Just HTTP for now. (We can add other protocols later.)
     "websocket": AuthMiddlewareStack(
         URLRouter(
