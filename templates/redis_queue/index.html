@@ -1,0 +1,53 @@
+<h1>hello redis queue</h1>
+{% comment %}<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <button id="submit" type="submit">test</button>
+</form>{% endcomment %}
+
+<button id="submit" type="button" onclick="execute()">test</button>
+
+<textarea id="log" cols="100" rows="20"></textarea>
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<script>
+    $(function(){
+        get_message();
+    });
+
+    $.ajaxSetup({
+        data: {csrfmiddlewaretoken: '{{ csrf_token }}'},
+    });
+
+    function get_message() {
+            let message = $.ajax({
+                url: '{% url 'redis_queue:get_message' user_uuid %}',
+                type: 'get',
+                dataType: 'text',
+                success: function (data) {
+                    if (data === 'done') {
+                        message.abort();
+                    } else {
+                        document.querySelector('#log').value += (data + '\n');
+                        get_message();
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            })
+    }
+
+    function execute() {
+        $('#log').val("");
+        $.ajax({
+            url: '{% url 'redis_queue:execute' %}',
+            type: 'post',
+            data: {
+                user_uuid: '{{ user_uuid }}',
+            },
+            success: function(data){
+                console.log(data);
+            }
+        })
+    }
+</script>
